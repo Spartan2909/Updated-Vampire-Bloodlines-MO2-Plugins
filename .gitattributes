@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Correctly display diffs for python backup files
+*.py.backup diff=python
