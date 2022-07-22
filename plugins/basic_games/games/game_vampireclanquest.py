@@ -69,9 +69,9 @@ class VampireLocalSavegames(mobase.LocalSavegames):
         return profile.localSavesEnabled()
 
 
-class VampireTheMasqueradeBloodlinesGame(BasicGame):
+class VampireTheMasqueradeClanQuestGame(BasicGame):
     Name = "Vampire - The Masquerade: Clan Quest Support Plugin"
-    Author = "Caleb"
+    Author = "Caleb Robson"
     Version = "1.0.0"
     Description = "Adds support for Vampires: The Masquerade - Clan Quest"
 
