@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-import os
+import os, sys
 import mobase
 
 from PyQt5.QtCore import QDir
@@ -71,8 +71,8 @@ class VampireLocalSavegames(mobase.LocalSavegames):
 
 class VampireTheMasqueradeBloodlinesGame(BasicGame):
     Name = "Vampire - The Masquerade: Bloodlines Support Plugin"
-    Author = "John"
-    Version = "1.0.0a"
+    Author = "Caleb Robson"
+    Version = "2.0.0"
     Description = "Adds support for Vampires: The Masquerade - Bloodlines"
 
     GameName = "Vampire - The Masquerade: Bloodlines"
@@ -82,10 +82,13 @@ class VampireTheMasqueradeBloodlinesGame(BasicGame):
     GameSteamId = [2600]
     GameGogId = [1207659240]
     GameBinary = "vampire.exe"
-    GameDataPath = "Unofficial_Patch"
-    GameDocumentsDirectory = "%GAME_PATH%/Unofficial_Patch/cfg"
-    GameSavesDirectory = "%GAME_PATH%/Unofficial_Patch/SAVE"
+    GameDataPath = "test dir"
+    GameDocumentsDirectory = "%GAME_PATH%/vampire/cfg"
+    GameSavesDirectory = "%GAME_PATH%/test dir/save"
     GameSaveExtension = "sav"
+
+    def __init__(self):
+        super().__init__()
 
     def init(self, organizer: mobase.IOrganizer) -> bool:
         super().init(organizer)
@@ -96,6 +99,11 @@ class VampireTheMasqueradeBloodlinesGame(BasicGame):
         self._featureMap[mobase.LocalSavegames] = VampireLocalSavegames(
             self.savesDirectory()
         )
+
+        VampireTheMasqueradeBloodlinesGame.GameDataPath = f'{self.detectGameDataPath()}'
+        VampireTheMasqueradeBloodlinesGame.GameDocumentsDirectory = f'%GAME_PATH%/{self.detectGameDataPath()}/cfg'
+        VampireTheMasqueradeBloodlinesGame.GameSavesDirectory = f'%GAME_PATH%/{self.detectGameDataPath()}/save'
+
         return True
 
     def initializeProfile(self, path: QDir, settings: int):
@@ -110,7 +118,7 @@ class VampireTheMasqueradeBloodlinesGame(BasicGame):
 
     def version(self):
         # Don't forget to import mobase!
-        return mobase.VersionInfo(1, 0, 0, mobase.ReleaseType.final)
+        return mobase.VersionInfo(2, 0, 0, mobase.ReleaseType.final)
 
     def iniFiles(self):
         return ["autoexec.cfg", "user.cfg"]
@@ -121,3 +129,15 @@ class VampireTheMasqueradeBloodlinesGame(BasicGame):
             VampireSaveGame(path)
             for path in Path(folder.absolutePath()).glob(f"*.{ext}")
         ]
+
+    def detectGameDataPath(self) -> str:
+        print(f'VTMB Plugin: detecting game data path, game absolute path is {self.gameDirectory().absolutePath()}', file=sys.stderr)
+        if os.path.isdir(f'{self.gameDirectory().absolutePath()}/CQM'):
+            print('VTMB Plugin: detected CQM', file=sys.stderr)
+            return 'CQM'
+        elif os.path.isdir(f'{self.gameDirectory().absolutePath()}/Unofficial_Patch'):
+            print('VTMB Plugin: detected Unofficial Patch', file=sys.stderr)
+            return 'Unofficial_Patch'
+        else:
+            print('VTMB Plugin: didn\'t detect anything', file=sys.stderr)
+            return 'Vampire'
